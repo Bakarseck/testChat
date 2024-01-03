@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <title>Chat Simple</title>
+</head>
+<body>
+    <div id="form-container">
+        <div id="login-form">
+            <input type="text" id="login-username" placeholder="Nom d'utilisateur">
+            <input type="password" id="login-password" placeholder="Mot de passe">
+            <button onclick="login()">Connexion</button>
+            <p>ou <span onclick="showSignup()">inscrivez-vous</span></p>
+        </div>
+
+        <div id="signup-form" class="hidden">
+            <input type="text" id="signup-username" placeholder="Nom d'utilisateur">
+            <input type="password" id="signup-password" placeholder="Mot de passe">
+            <button onclick="signup()">Inscription</button>
+            <p>ou <span onclick="showLogin()">connectez-vous</span></p>
+        </div>
+    </div>
+
+    <div id="chat-container" style="display:none;">
+        <div id="sidebar">
+            <div id="user-list">
+            </div>
+        </div>
+        <div id="chat-area">
+            <div id="chat-box">
+            </div>
+            <input type="text" id="message-input" placeholder="Écrire un message...">
+            <button id="send-button">Envoyer</button>
+        </div>
+    </div>
+    
+
+    <script src="static/script.js"></script>
+</body>
+</html>
+
