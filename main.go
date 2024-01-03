@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
@@ -40,6 +41,7 @@ func init() {
 }
 
 var Sessions = make(map[string]string)
+var sessionMutex sync.Mutex
 
 func GenerateSessionID() (string, error) {
 	b := make([]byte, 16)
@@ -51,6 +53,8 @@ func GenerateSessionID() (string, error) {
 }
 
 var clients = make(map[*websocket.Conn]bool)
+
+var onlineUsers = make(map[string]bool)
 var upgrader = websocket.Upgrader{}
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -79,6 +83,24 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+}
+
+func GetUsernameFromRequest(r *http.Request) (string, error) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return "", err
+	}
+
+	sessionToken := cookie.Value
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+
+	username, ok := Sessions[sessionToken]
+	if !ok {
+		return "", fmt.Errorf("session invalide ou expirée")
+	}
+
+	return username, nil
 }
 
 func main() {
@@ -128,7 +150,7 @@ func main() {
 			cookie := http.Cookie{
 				Name:   "session_token",
 				Value:  sessionID,
-				MaxAge: 30*3600,
+				MaxAge: 30 * 3600,
 			}
 			http.SetCookie(w, &cookie)
 
