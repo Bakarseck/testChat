@@ -57,8 +57,14 @@ socket.onopen = function(e) {
 
 socket.onmessage = function(event) {
     let data = JSON.parse(event.data);
-    updateUserList(data.users);
+
+    switch(data.Sender) {
+        case 'Serveur':
+            console.log(data);
+            break;
+    }
 };
+
 
 socket.onclose = function(event) {
     if (event.wasClean) {
@@ -68,17 +74,3 @@ socket.onclose = function(event) {
     }
 };
 
-function updateUserList(users) {
-    let userListDiv = document.getElementById("user-list");
-    userListDiv.innerHTML = "";
-
-    users.forEach(user => {
-        let userDiv = document.createElement("div");
-        let statusDot = document.createElement("span");
-        statusDot.className = "status-dot " + (user.online ? "online" : "");
-
-        userDiv.appendChild(statusDot);
-        userDiv.appendChild(document.createTextNode(user.username));
-        userListDiv.appendChild(userDiv);
-    });
-}
