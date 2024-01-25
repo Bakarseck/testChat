@@ -2,17 +2,17 @@ package main
 
 import "golang.org/x/crypto/bcrypt"
 
-func createUser(username, password string) error {
+func createUser(username, firstName, lastName, age, gender, email, password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 
-	statement, err := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?)")
+	statement, err := db.Prepare("INSERT INTO users (username, firstName, lastName, age, gender, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
-	_, err = statement.Exec(username, string(hashedPassword))
+	_, err = statement.Exec(username, firstName, lastName, age, gender, email, string(hashedPassword))
 	return err
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,10 +19,22 @@ func init() {
 	}
 
 	createUserTable := `CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password TEXT
-    );`
-	statement, _ := db.Prepare(createUserTable)
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT UNIQUE,
+		firstName TEXT,
+		lastName TEXT,
+		age INTEGER,
+		gender TEXT,
+		email TEXT UNIQUE,
+		password TEXT
+	);`
+
+	statement, err := db.Prepare(createUserTable)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	statement.Exec()
 
 	createMessageTable := `CREATE TABLE IF NOT EXISTS messages (
@@ -32,7 +45,12 @@ func init() {
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     );`
 
-	statement, _ = db.Prepare(createMessageTable)
+	statement, err = db.Prepare(createMessageTable)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	statement.Exec()
 }
 
@@ -84,6 +102,8 @@ func main() {
 	http.HandleFunc("/login", Signin)
 
 	http.HandleFunc("/ws", handleConnections)
+
+	http.HandleFunc("/verify", VerifySession)
 
 	log.Println("Server started on :8080")
 	err := http.ListenAndServe(":8080", nil)

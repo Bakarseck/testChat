@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/google/uuid"
 )
 
 var Sessions = make(map[string]string)
-var sessionMutex sync.Mutex
 
 func GenerateSessionID() (string, error) {
 	id, err := uuid.NewRandom()
@@ -26,8 +24,6 @@ func GetUsernameFromRequest(r *http.Request) (string, error) {
 	}
 
 	sessionToken := cookie.Value
-	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
 
 	username, ok := Sessions[sessionToken]
 	if !ok {
@@ -36,3 +32,4 @@ func GetUsernameFromRequest(r *http.Request) (string, error) {
 
 	return username, nil
 }
+
